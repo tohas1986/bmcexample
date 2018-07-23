@@ -1,0 +1,43 @@
+#!/bin/bash
+#stop WDG timer
+echo stop > /dev/watchdog
+
+#export GPIOE0 to disable CPU1
+echo 32 > /sys/class/gpio/export
+sleep 1s
+echo out > /sys/class/gpio/gpio32/direction
+echo 1 > /sys/class/gpio/gpio32/value
+echo 32 > /sys/class/gpio/unexport
+
+#export GPIOR5 and release sysrst to PCH
+echo 141 > /sys/class/gpio/export
+sleep 1s
+echo out > /sys/class/gpio/gpio141/direction
+echo 1 > /sys/class/gpio/gpio141/value
+echo 0 > /sys/class/gpio/gpio141/value
+sleep 1s
+echo 1 > /sys/class/gpio/gpio141/value
+echo 141 > /sys/class/gpio/unexport
+
+#export GPIOD3 and GPIOR7
+echo 27 > /sys/class/gpio/export
+sleep 100ms
+echo 195 > /sys/class/gpio/export
+sleep 100ms
+echo out > /sys/class/gpio/gpio27/direction
+echo out > /sys/class/gpio/gpio195/direction
+sleep 100ms
+echo 1 > /sys/class/gpio/gpio27/value
+echo 1 > /sys/class/gpio/gpio195/value
+sleep 100ms
+echo 0 > /sys/class/gpio/gpio27/value
+echo 0 > /sys/class/gpio/gpio195/value
+sleep 100ms
+echo 1 > /sys/class/gpio/gpio27/value
+echo 1 > /sys/class/gpio/gpio195/value
+sleep 100ms
+echo 27 > /sys/class/gpio/unexport
+echo 195 > /sys/class/gpio/unexport
+
+
+

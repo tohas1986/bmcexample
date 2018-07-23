@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#export GPIOD6
+echo 31 > /sys/class/gpio/export
+sleep 3s
+echo out > /sys/class/gpio/gpio31/direction
+while [ 1 ]				
+do
+echo 1 > /sys/class/gpio/gpio31/value
+sleep 1s
+echo 0 > /sys/class/gpio/gpio31/value
+sleep 1s
+done
+
+
