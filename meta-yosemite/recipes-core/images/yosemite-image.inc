@@ -10,9 +10,7 @@ UBOOT_IMAGE_ENTRYPOINT = "0x40008000"
 
 # Include modules in rootfs
 IMAGE_INSTALL += " \
-  openbmc-utils \
-  fan-ctrl \
-  watchdog-ctrl \
+  rikgpio \
   "
 
 IMAGE_FEATURES += " \

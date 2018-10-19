@@ -17,8 +17,6 @@ BBLAYERS ?= " \
   ##OEROOT##/../../../meta-facebook \
   ##OEROOT##/../../../meta-facebook/meta-yosemite \
   ##OEROOT##/../../../meta-facebook/meta-python3 \
-  ##OEROOT##/../../../build/workspace \
-  ##OEROOT##/../../../meta-example \
   "
 BBLAYERS_NON_REMOVABLE ?= " \
   ##OEROOT##/meta \

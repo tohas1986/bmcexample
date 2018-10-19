@@ -17,5 +17,6 @@ DISTRO ?= "openbmc-fb"
 # Most build logic is represented in the U-Boot recipes.
 # IMAGE_FEATURES += " verified-boot "
 
-#IMAGE_INSTALL_append = " initfans-lt obmcutility-lt setfanspeed-lt"
+#IMAGE_INSTALL_append = " tprint-lt ledblink-lt heart-lt"
+#IMAGE_INSTALL_append = " sysup-lt"
 

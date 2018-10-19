@@ -1,0 +1,10 @@
+# The loopback interface
+auto lo
+iface lo inet loopback
+
+iface eth1 inet static
+address 10.10.0.222
+netmask 255.255.255.0
+gateway 10.10.0.1
+auto eth1
+
