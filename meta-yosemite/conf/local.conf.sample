@@ -18,5 +18,5 @@ DISTRO ?= "openbmc-fb"
 # IMAGE_FEATURES += " verified-boot "
 
 #IMAGE_INSTALL_append = " tprint-lt ledblink-lt heart-lt"
-#IMAGE_INSTALL_append = " sysup-lt"
+IMAGE_INSTALL_append = " ledblink-lt"
 

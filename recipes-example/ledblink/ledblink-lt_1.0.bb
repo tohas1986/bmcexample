@@ -7,7 +7,7 @@ DESCRIPTION = "LED blink application"
 SECTION = "examples"
 DEPENDS = ""
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://ledblink-1.0;md5=c8873ca97bf943388a19a1732ea308ca"
+LIC_FILES_CHKSUM = "file://ledblink-1.0;md5=d69079b8a5dfb6799461178e64482db2"
 
 # This tells bitbake where to find the files we're providing on the local filesystem
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
