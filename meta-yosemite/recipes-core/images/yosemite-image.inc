@@ -11,6 +11,7 @@ UBOOT_IMAGE_ENTRYPOINT = "0x40008000"
 # Include modules in rootfs
 IMAGE_INSTALL += " \
   rikgpio \
+  lighttpd \
   "
 
 IMAGE_FEATURES += " \
