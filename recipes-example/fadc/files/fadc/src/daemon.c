@@ -34,7 +34,11 @@
 #include <sys/types.h>
 #include <errno.h>
 
+#include <stdarg.h>
+#include <limits.h>
+#include "iniparser.h"
 #include "adc.h"
+#include "daemon.h"
 
 static int running = 0;
 static int delay = 1;
@@ -51,41 +55,112 @@ static char *app_name = NULL;
 FILE *log_stream;
 FILE *text_result;
 
+daemon_cfg_t daemon_cfg;
+
+
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Error callback for iniparser: wraps `fprintf(log_stream, ...)`.
+ */
+/*--------------------------------------------------------------------------*/
+static int iniparser_error_callback(const char *format, ...)
+{
+  int ret;
+  va_list argptr;
+  va_start(argptr, format);
+  ret = vfprintf(log_stream, format, argptr);
+  va_end(argptr);
+  return ret;
+}
+
+
+
 /**
  * \brief Read configuration from config file
  */
 int read_conf_file(int reload)
 {
-	FILE *conf_file = NULL;
-	int ret = -1;
+    dictionary  *   ini ;
+    int ret;
+    char param_str[20];
+    const char *name_str;
+    char cwd[PATH_MAX];
 
 	if (conf_file_name == NULL) return 0;
 
-	conf_file = fopen(conf_file_name, "r");
+    iniparser_set_error_callback(iniparser_error_callback);
 
-	if (conf_file == NULL) {
+    ini = iniparser_load(conf_file_name);
+
+	if (ini == NULL) 
+	{
 		syslog(LOG_ERR, "Can not open config file: %s, error: %s",
 				conf_file_name, strerror(errno));
 		return -1;
 	}
 
-	ret = fscanf(conf_file, "%d", &delay);
+	delay = iniparser_getint(ini, "main:update_delay", 10);
+	ret = iniparser_getint(ini, "main:output_format", -1);
 
-	if (ret > 0) {
-		if (reload == 1) {
+	name_str = iniparser_getstring(ini, "main:output_file", "/tmp/out.txt");
+	if(daemon_cfg.datafilepath != NULL) free(daemon_cfg.datafilepath);
+	daemon_cfg.datafilepath = malloc(strlen(name_str) + 1);
+	strcpy(daemon_cfg.datafilepath, name_str);
+
+	name_str = iniparser_getstring(ini, "main:test_path", "");
+	if(daemon_cfg.basepath != NULL) free(daemon_cfg.basepath);
+	if(strlen(name_str) == 0)
+	{
+		daemon_cfg.basepath = malloc(48);
+		strcpy(daemon_cfg.basepath, "/sys/devices/platform/ast_adc.0");
+	}
+	else
+	{
+		getcwd(cwd, sizeof(cwd));
+		strcat(cwd, "/");
+		strcat(cwd, name_str);
+		daemon_cfg.basepath = malloc(strlen(cwd) + 1);
+		strcpy(daemon_cfg.basepath, cwd);
+	}
+
+	for(int i=0; i<16; i++)
+	{
+		sprintf(param_str, "adc%d:name", i);
+		name_str = iniparser_getstring(ini, param_str, "-");
+		if(adcchndata[i].name != NULL) free(adcchndata[i].name);
+		adcchndata[i].name = malloc(strlen(name_str) + 1);
+		strcpy(adcchndata[i].name, name_str);
+
+		sprintf(param_str, "adc%d:r1", i);
+		adcchndata[i].r1 = iniparser_getint(ini, param_str, 0);
+		sprintf(param_str, "adc%d:r2", i);
+		adcchndata[i].r2 = iniparser_getint(ini, param_str, 1);
+		sprintf(param_str, "adc%d:v2", i);
+		adcchndata[i].v2 = iniparser_getint(ini, param_str, 0);
+	}
+
+	if (ret > 0)
+	{
+	    iniparser_dump(ini, log_stream);
+
+		if (reload == 1) 
+		{
 			syslog(LOG_INFO, "Reloaded configuration file %s of %s",
 				conf_file_name,
 				app_name);
-		} else {
+		} 
+		else 
+		{
 			syslog(LOG_INFO, "Configuration of %s read from file %s",
 				app_name,
 				conf_file_name);
 		}
 	}
 
-	fclose(conf_file);
+    iniparser_freedict(ini);
 
-	return ret;
+	return 0;
 }
 
 /**
@@ -245,6 +320,16 @@ void print_help(void)
 /* Main function */
 int main(int argc, char *argv[])
 {
+	// Инициализация
+	daemon_cfg.datafilepath = NULL;
+	daemon_cfg.basepath = NULL;
+	for(int i=0; i<16; i++)
+	{
+		adcchndata[i].name = NULL;
+		adcchndata[i].value_cmd = NULL;
+	}
+
+
 	static struct option long_options[] = {
 		{"conf_file", required_argument, 0, 'c'},
 		{"test_conf", required_argument, 0, 't'},
@@ -324,20 +409,21 @@ int main(int argc, char *argv[])
 	if(init_ADC() == 0)
 	{
 		/* Never ending loop of server */
-		while (running == 1) {
-			/* Debug print */
-			ret = fprintf(log_stream, "Debug: %d\n", counter++);
-			if (ret < 0) {
-				syslog(LOG_ERR, "Can not write to log stream: %s, error: %s",
-					(log_stream == stdout) ? "stdout" : log_file_name, strerror(errno));
-				break;
-			}
-			ret = fflush(log_stream);
-			if (ret != 0) {
-				syslog(LOG_ERR, "Can not fflush() log stream: %s, error: %s",
-					(log_stream == stdout) ? "stdout" : log_file_name, strerror(errno));
-				break;
-			}
+		while (running == 1) 
+		{
+			// /* Debug print */
+			// ret = fprintf(log_stream, "Debug: %d\n", counter++);
+			// if (ret < 0) {
+			// 	syslog(LOG_ERR, "Can not write to log stream: %s, error: %s",
+			// 		(log_stream == stdout) ? "stdout" : log_file_name, strerror(errno));
+			// 	break;
+			// }
+			// ret = fflush(log_stream);
+			// if (ret != 0) {
+			// 	syslog(LOG_ERR, "Can not fflush() log stream: %s, error: %s",
+			// 		(log_stream == stdout) ? "stdout" : log_file_name, strerror(errno));
+			// 	break;
+			// }
 
 			/* TODO: dome something useful here */
 
@@ -358,6 +444,19 @@ int main(int argc, char *argv[])
 	/* Write system log and close it. */
 	syslog(LOG_INFO, "Stopped %s", app_name);
 	closelog();
+
+
+	/* Free allocated memory */
+	for(int i=0; i<16; i++)
+	{
+		if(adcchndata[i].name != NULL) 
+		{
+			free(adcchndata[i].name);
+			adcchndata[i].name = NULL;
+		}
+	}
+	if(daemon_cfg.datafilepath != NULL) free(daemon_cfg.datafilepath);
+	if(daemon_cfg.basepath != NULL) free(daemon_cfg.basepath);
 
 	/* Free allocated memory */
 	if (conf_file_name != NULL) free(conf_file_name);

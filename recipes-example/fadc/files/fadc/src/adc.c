@@ -28,129 +28,142 @@
 
 // Состояния каналов
 // 0xff - не инициализирован
-// 0x00 - был отключен
-// 0x01 - был включен
-static unsigned char adcstate[16];
-static char *value_cmd[16];
+// 0x30 ('0') - был отключен
+// 0x31 ('1') - был включен
+ADCChnData_t adcchndata[16];
 
-char datafilepath[] = "/tmp/out.txt";
+static int do_adc_cnt;
+
+
+
+int adc_reg_read(const char * cmd, char *val, int val_size)
+{
+	FILE *pfh;
+
+	if((pfh = fopen(cmd, "r")) != NULL)
+	{
+		fgets(val, val_size, pfh);
+		fclose(pfh);
+		for(int i=strlen(val); (val[i] <= ' ') && (i>0); i--) val[i] = 0;
+	}
+	else
+	{
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+int adc_reg_write(const char * cmd, char *val)
+{
+	FILE *pfh;
+
+	if((pfh = fopen(cmd, "w+")) != NULL)
+	{
+		fputs(val, pfh);
+		fclose(pfh);
+	}
+	else
+	{
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
+}
 
 
 int init_ADC()
 {
-	char basepath[PATH_MAX];
 	char cwd[PATH_MAX];
-	FILE *pfh;
+	char cmd[PATH_MAX];
+	char ret_string[16];
+	int ret;
 	int cnt;
 
 	syslog(LOG_DEBUG, "int init_ADC()");
 	fprintf(log_stream, "Debug: int init_ADC()\n");
 
-	if(getcwd(cwd, sizeof(cwd)) == NULL)
-	{
-		syslog(LOG_ERR, "getcwd() error");
-		fprintf(log_stream, "getcwd() error\n");
-		return EXIT_FAILURE;
-	}
-
-	if(strcmp(cwd, "/") == 0)
-	{ // Запущен демон
-		strcpy(basepath, "/sys/devices/platform/ast_adc.0");
-	}
-	else
-	{
-		strcpy(basepath, cwd);
-		strcat(basepath, "/test/ast_adc.0");
-	}
-
-	fprintf(log_stream, "basepath: %s\n", basepath);
+	fprintf(log_stream, "basepath: %s\n", daemon_cfg.basepath);
 
 	cnt = 0;
 	for(int i=0; i<16; i++)
 	{
 		// Включение канала
-		// strcpy(cwd, basepath);
-		// strcat(cwd, "/adc");
-		// strcat(cwd, itoa(i));
-		// strcat(cwd, "_en");
-
-		sprintf(cwd, "%s/adc%d_en", basepath, i);
+		sprintf(cwd, "%s/adc%d", daemon_cfg.basepath, i);
 		fprintf(log_stream, "%s\n", cwd);
 
-		if(access(cwd, F_OK) != -1)
-		{
-			fprintf(log_stream, "trace 1\n");
-			pfh = fopen(cwd, "rw+");
-			if(pfh != NULL)
-			{
-				fprintf(log_stream, "trace 2\n");
-				if(fread(&adcstate[i], sizeof(char), 1, pfh) != 1)
-				{ // Не смогли прочитать из файла 1 символ
-					adcstate[i] = 0xff;
-					fprintf(log_stream, "trace 3\n");
-				}
-				else
-				{
-					fputc('1', pfh);
-					cnt++;
-					fprintf(log_stream, "trace 4\n");
-				}
-			}
-			else
-			{
-				adcstate[i] = 0xff;
-				fprintf(log_stream, "trace 5\n");
-			}
-			fclose(pfh);
+		strcpy(cmd, cwd);
+		strcat(cmd, "_en");
+		ret = adc_reg_read(cmd, ret_string, sizeof(ret_string));
+		if(ret == EXIT_SUCCESS)
+		{ // Есть канал с таким номером
+			adcchndata[i].en = ret_string[0];
+			ret_string[0] = '1';
+			ret_string[1] = 0;
+			ret = adc_reg_write(cmd, ret_string);
+
+			strcpy(cmd, cwd);
+			strcat(cmd, "_r1");
+			sprintf(ret_string, "%d", adcchndata[i].r1);
+			ret = adc_reg_write(cmd, ret_string);
+
+			strcpy(cmd, cwd);
+			strcat(cmd, "_r2");
+			sprintf(ret_string, "%d", adcchndata[i].r2);
+			ret = adc_reg_write(cmd, ret_string);
+
+			strcpy(cmd, cwd);
+			strcat(cmd, "_v2");
+			sprintf(ret_string, "%d", adcchndata[i].v2);
+			ret = adc_reg_write(cmd, ret_string);
+
+			if(adcchndata[i].value_cmd != NULL) free(adcchndata[i].value_cmd);
+			adcchndata[i].value_cmd = malloc(strlen(daemon_cfg.basepath) + 20);
+			if(adcchndata[i].value_cmd != NULL)
+				sprintf(adcchndata[i].value_cmd, "%s_value", cwd);
+
+			cnt++;
 		}
 		else
 		{
-			adcstate[i] = 0xff;
-			fprintf(log_stream, "trace 6\n");
+			fprintf(log_stream, "Can't access channel %d\n", i);
+			adcchndata[i].en = 0xff;
 		}
+
 	}
-	// В этом месте включили каналы, которые смогли
 
 	if(cnt == 0)
-	{
+	{ // Не смогли сконфигурировать ни одного канала
 		return EXIT_FAILURE;
 	}
-	else
-	{
-		for(int i=0; i<16; i++)
-		{
-			fprintf(log_stream, "adc%d state 0x%02x\n", i, adcstate[i]);
-			value_cmd[i] = malloc(strlen(basepath) + 20);
-			sprintf(value_cmd[i], "%s/adc%d_value", basepath, i);
-		}
-		// return EXIT_FAILURE;
-		return EXIT_SUCCESS;
-	}
+
+	return EXIT_SUCCESS;
 }
+
+
+
 
 void do_ADC()
 {
-	char outbuf[PATH_MAX];
+	char outbuf[2048];   // 16 строк по 128 байт на строку
+	char outstr[132];
 	char buf[30];
 	FILE *pfh;
-	// syslog(LOG_DEBUG, "void do_ADC()");
-	fprintf(log_stream, "void do_ADC()\n");
-	outbuf[0] = 0;
+
+	sprintf(outbuf, "%d\n", do_adc_cnt++);
 	for(int i=0; i<16; i++)
 	{
-		if(adcstate[i] != 0xff)
+		if(adcchndata[i].en != 0xff)
 		{
-			if((pfh = fopen(value_cmd[i], "r")) != NULL)
+			if(adc_reg_read(adcchndata[i].value_cmd, buf, sizeof(buf)) == EXIT_SUCCESS)
 			{
-				fgets(buf, sizeof(buf), pfh);
-				fclose(pfh);
+				sprintf(outstr, "adc%2d  %s  \"%s\"\n", i, buf, adcchndata[i].name);
 			}
 			else
 			{
-				sprintf(buf, "chn %d no value", i);
+				sprintf(outstr, "chn %d no value\n", i);
 			}
-			strcat(outbuf, buf);
-			strcat(outbuf, "\n");
+			strcat(outbuf, outstr);
 		}
 		else
 		{
@@ -158,7 +171,8 @@ void do_ADC()
 			strcat(outbuf, buf);
 		}
 	}
-	if((pfh = fopen(datafilepath, "w")) != NULL)
+
+	if((pfh = fopen(daemon_cfg.datafilepath, "w")) != NULL)
 	{
 		fputs(outbuf, pfh);
 		fclose(pfh);
@@ -170,13 +184,19 @@ void do_ADC()
 	}
 }
 
+
+
 void deinit_ADC()
 {
 	// syslog(LOG_DEBUG, "void deinit_ADC()");
 	fprintf(log_stream, "void deinit_ADC(): DEINIT\n");
 	for(int i=0; i<16; i++)
 	{
-		free(value_cmd[i]);
+		if(adcchndata[i].value_cmd != NULL)
+		{
+			free(adcchndata[i].value_cmd);
+			adcchndata[i].value_cmd = NULL;
+		}
 	}
 }
 
