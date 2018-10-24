@@ -11,12 +11,12 @@ DEPENDS = ""
 LICENSE = "GPL-2"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=8264535c0c4e9c6c335635c4026a8022"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRCREV = "${AUTOREV}"
 #SRC_URI = "git://10.10.0.158/heartd.git;branch=master;protocol=ssh;user=git"
 SRC_URI = "file://fadc \
-          "
+          file://fadc.conf"
 
 S = "${WORKDIR}/fadc"
 
@@ -36,10 +36,13 @@ PARALLEL_MAKE = ""
 # https://stackoverflow.com/questions/49748528/yocto-files-directories-were-installed-but-not-shipped-in-any-package
 # https://lists.yoctoproject.org/pipermail/yocto/2016-January/028127.html
 FILES_${PN} += "/etc/fadc/fadc.conf"
-FILES_${PN} += "/usr/lib/systemd/system/forking-fadc.service"
-FILES_${PN} += "/usr/lib/systemd/system/simple-fadc.service"
+# FILES_${PN} += "/usr/lib/systemd/system/forking-fadc.service"
+# FILES_${PN} += "/usr/lib/systemd/system/simple-fadc.service"
 
 do_install_append() {
+	install -d ${D}${sysconfdir}/fadc
+	install -m 755 ${WORKDIR}/fadc.conf ${D}${sysconfdir}/fadc/fadc.conf
+
 	install -d ${D}${sysconfdir}/init.d
 	install -m 755 ${S}/fadc.init ${D}${sysconfdir}/init.d/fadc.init
 	update-rc.d -r ${D} fadc.init defaults

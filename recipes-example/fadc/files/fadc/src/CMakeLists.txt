@@ -1,4 +1,4 @@
-set (daemon_src daemon.c adc.c)
+set (daemon_src daemon.c adc.c dictionary.c iniparser.c)
 
 # Make build flags compiler specific
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -8,6 +8,9 @@ if (CMAKE_COMPILER_IS_GNUCC)
 		set (CMAKE_C_FLAGS "-D_REETRANT -DNDEBUG -fPIC -Wall -Wextra -pedantic -O3")
 	endif ()
 endif (CMAKE_COMPILER_IS_GNUCC)
+
+
+
 
 include_directories($ENV{SINC})
 
