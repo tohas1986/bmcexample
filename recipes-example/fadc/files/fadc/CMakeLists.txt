@@ -66,6 +66,6 @@ endfunction(install_conf)
 # Install configuration file
 install_conf (./${PROJECT_NAME}.conf ${DAEMON_CONF_DIR})
 
-# Install systemd unit files 
-install_conf (./simple-${PROJECT_NAME}.service ${SYSTEMD_UNIT_DIR})
-install_conf (./forking-${PROJECT_NAME}.service ${SYSTEMD_UNIT_DIR})
+# # Install systemd unit files 
+# install_conf (./simple-${PROJECT_NAME}.service ${SYSTEMD_UNIT_DIR})
+# install_conf (./forking-${PROJECT_NAME}.service ${SYSTEMD_UNIT_DIR})
