@@ -1,1 +1,9 @@
-<html><body><h1>It works!</h1></body></html>
+<html> <head>
+<title>TestServer</title>
+</head>
+<body>
+	<form action="httpd_wellcome.sh">
+	<input type=submit>
+	</form>
+</body>
+</html>

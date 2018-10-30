@@ -13,6 +13,7 @@ RDEPENDS_${PN} += " \
                lighttpd-module-indexfile \
                lighttpd-module-dirlisting \
                lighttpd-module-staticfile \
+	       lighttpd-module-cgi \
 "
 
 SRC_URI = "http://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${PV}.tar.xz \
@@ -51,7 +52,7 @@ do_install_append() {
 	install -d ${D}${sysconfdir}/init.d ${D}${sysconfdir}/lighttpd.d ${D}/www/pages/dav
 	install -m 0755 ${WORKDIR}/lighttpd ${D}${sysconfdir}/init.d
 	install -m 0644 ${WORKDIR}/lighttpd.conf ${D}${sysconfdir}
-	install -m 0644 ${WORKDIR}/index.html.lighttpd ${D}/www/pages/index.html
+	install -m 0644 ${WORKDIR}/index.html.lighttpd ${D}/www/pages/index.html	
 
 	install -d ${D}${systemd_unitdir}/system
 	install -m 0644 ${WORKDIR}/lighttpd.service ${D}${systemd_unitdir}/system
