@@ -1,0 +1,17 @@
+diff --git a/configs/fbyosemite_defconfig b/configs/fbyosemite_defconfig
+index 2ad8295..c3d14ae 100644
+--- a/configs/fbyosemite_defconfig
++++ b/configs/fbyosemite_defconfig
+@@ -7,9 +7,9 @@ CONFIG_SYS_NS16550=y
+ # CONFIG_CMD_SETEXPR is not set
+ CONFIG_CMD_IMI=y
+ CONFIG_OF_LIBFDT=y
+-CONFIG_FIT=y
+-CONFIG_FIT_VERBOSE=y
+-CONFIG_FIT_SIGNATURE=y
++# CONFIG_FIT=y
++# CONFIG_FIT_VERBOSE=y
++# CONFIG_FIT_SIGNATURE=y
+ CONFIG_DM=y
+ # CONFIG_OF_CONTROL=y
+ # CONFIG_OF_EMBED=y

@@ -1,0 +1,58 @@
+diff --git a/arch/arm/plat-aspeed/dev-i2c.c b/arch/arm/plat-aspeed/dev-i2c.c
+index 36892b4..fc88be1 100644
+--- a/arch/arm/plat-aspeed/dev-i2c.c
++++ b/arch/arm/plat-aspeed/dev-i2c.c
+@@ -925,28 +925,28 @@ static struct i2c_board_info ast_i2c_board_info_7[] __initdata = {
+ //Under I2C Dev 8
+ static struct i2c_board_info ast_i2c_board_info_8[] __initdata = {
+   // FRUID
+-  {
+-    I2C_BOARD_INFO("24c64", 0x51),
+-  },
++  // {
++  //   I2C_BOARD_INFO("24c64", 0x51),
++  // },
+ };
+ 
+ //Under I2C Dev 9
+ static struct i2c_board_info ast_i2c_board_info_9[] __initdata = {
+   // Inlet and Outlet temp. sensors
+-  {
+-    I2C_BOARD_INFO("tmp421", 0x4e),
+-  },
+-  {
+-    I2C_BOARD_INFO("tmp421", 0x4f),
+-  },
++  // {
++  //   I2C_BOARD_INFO("tmp421", 0x4e),
++  // },
++  // {
++  //   I2C_BOARD_INFO("tmp421", 0x4f),
++  // },
+ };
+ 
+ //Under I2C Dev 10
+ static struct i2c_board_info ast_i2c_board_info_10[] __initdata = {
+   // Hotswap Sensor
+-  {
+-    I2C_BOARD_INFO("adm1278", 0x40),
+-  },
++  // {
++  //   I2C_BOARD_INFO("adm1278", 0x40),
++  // },
+ };
+ 
+ //Under I2C Dev 11
+@@ -960,9 +960,9 @@ static struct i2c_board_info ast_i2c_board_info_11[] __initdata = {
+ //Under I2C Dev 12
+ static struct i2c_board_info ast_i2c_board_info_12[] __initdata = {
+   // Mezz Card Mezz_SMB bus (FRUID, GPIO expander, QSFP+)
+-  {
+-    I2C_BOARD_INFO("24c64", 0x51),
+-  },
++  // {
++  //   I2C_BOARD_INFO("24c64", 0x51),
++  // },
+ };
+ 
+ /* end of CONFIG_YOSEMITE */
