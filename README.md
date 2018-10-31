@@ -12,7 +12,7 @@ linux-aspeed/drivers/net/ethernet/faraday
 
 ## Rikor-Machine
 
-Рецепт rikor-machine содержит патчи для u-boot и linux-aspeed.
+Рецепт rikor-machine содержит патчи для u-boot и linux-aspeed. Папку rikor-machine нужно скопировать в папку рецептов. Патчи применяются автоматически при выполнении команды devtool modify, или при сборки из сети.
 
 Для u-boot изменяется файл
 ```
