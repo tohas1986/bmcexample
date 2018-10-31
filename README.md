@@ -4,7 +4,9 @@
 
 Для корректной работы NIC1, подключенного к BMC:
 - папку faraday из этого хранилища скопировать (с заменой) в папку по адресу:
-/linux-aspeed/drivers/net/ethernet/faraday
+```
+linux-aspeed/drivers/net/ethernet/faraday
+```
 
 Ну и собственно все
 
@@ -14,12 +16,13 @@
 
 Для u-boot изменяется файл
 ```
-build/workspace/sources/u-boot/config/fbyosemite_defconfig
+u-boot/config/fbyosemite_defconfig
 ```
 
 Для linux-aspeed изменяется файл
 ```
-build/workspace/sources/linux-aspeed/arch/arm/plat-aspeed/dev-i2c.c
+linux-aspeed/arch/arm/plat-aspeed/dev-i2c.c
+linux-aspeed/drivers/net/ethernet/faraday/ftgmac100.c
 ```
 
 ## Пример работы с АЦП

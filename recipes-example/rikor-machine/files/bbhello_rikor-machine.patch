@@ -1,0 +1,13 @@
+diff --git a/lib.cpp b/lib.cpp
+index 21f184d..bee1723 100644
+--- a/lib.cpp
++++ b/lib.cpp
+@@ -1,6 +1,8 @@
+ /**
+ 	\file
+ 	Библиотека функций печати версии приложения.
++
++	bbhello
+ */	
+ 
+ /**
