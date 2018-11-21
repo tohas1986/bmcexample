@@ -26,6 +26,14 @@ LIC_FILES_CHKSUM = "file://Makefile;md5=dab47dd8221aba77db5cbfd76dbff5eb"
 SRC_URI = "file://httpd_test.c \
            file://Makefile \
 	   file://httpd_wellcome.sh \
+	   file://server_on.sh \
+	   file://setfans.sh \
+	   file://sensors_get.sh \
+	   file://sensors_get2log.sh \
+	   file://autofan.sh \
+	   file://fanmode.sh \
+	   file://netconfig.sh \
+	   file://power.sh \
           "
 
 S = "${WORKDIR}"
@@ -39,6 +47,14 @@ do_install() {
   install -d $bin
   install -m 755 httpd_test.cgi ${dst}/
   install -m 777 httpd_wellcome.sh ${dst}/
+  install -m 777 server_on.sh ${dst}/
+  install -m 777 setfans.sh ${dst}/
+  install -m 777 sensors_get.sh ${dst}/
+  install -m 777 sensors_get2log.sh ${dst}/
+  install -m 777 autofan.sh ${dst}/
+  install -m 777 fanmode.sh ${dst}/
+  install -m 777 netconfig.sh ${dst}/
+  install -m 777 power.sh ${dst}/
   ln -snf ${dst}/httpd_test.cgi ${bin}/rikcgi
 }
 

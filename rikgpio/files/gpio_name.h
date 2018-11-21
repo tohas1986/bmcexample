@@ -43,6 +43,11 @@
 #define FM_FORCE_BMC_UPDATE			"GPIOE1"
 #define FM_CPU1_DISABLE				"GPIOE0"
 
+#define FP_PWR_BTN_MUX_N			"GPIOR7"
+#define FM_BMC_PWR_BTN_N			"GPIOR6"
+#define RST_BMC_RSTBTN_OUT_N		"GPIOR5"
+#define FP_RST_BTN_N				"GPIOR4"
+
 //Directions
 //0 - input
 //1 - output
@@ -70,7 +75,7 @@
 #define FM_CPU0_MEMCD_MEMHOT_DIR	0
 #define FM_CPU0_MEMAB_MEMHOT_DIR	0
 
-#define FM_BMC_ONCTL_DIR			0		//1 -по идее должен быть output - TODO
+#define FM_BMC_ONCTL_DIR			1		//1 -по идее должен быть output - TODO
 
 #define FP_LED_STATUS_AMBER_DIR		1
 #define FM_INTRUDER_HDR_DIR			0
@@ -84,6 +89,11 @@
 #define FM_SMI_ACTIVE_DIR			0
 #define FM_FORCE_BMC_UPDATE_DIR		0
 #define FM_CPU1_DISABLE_DIR			0		//1 -по идее должен быть output - TODO
+
+#define FP_PWR_BTN_MUX_N_DIR		0
+#define FM_BMC_PWR_BTN_N_DIR		1	
+#define RST_BMC_RSTBTN_OUT_N_DIR	1	
+#define FP_RST_BTN_N_DIR			1	
 
 
 #endif	//GPIO_NAME_H

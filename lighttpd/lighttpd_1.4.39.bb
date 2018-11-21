@@ -22,6 +22,12 @@ SRC_URI = "http://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${PV}.t
         file://lighttpd \
         file://lighttpd.service \
         file://pkgconfig.patch \
+	file://css/bmc.css \
+	file://img/clock_off_32.gif \
+	file://img/clock_on_32.gif \
+	file://img/logo64.gif \
+	file://img/power_32.gif \
+	file://js/bmc.js \
         "
 
 SRC_URI[md5sum] = "63c7563be1c7a7a9819a51f07f1af8b2"
@@ -52,7 +58,7 @@ do_install_append() {
 	install -d ${D}${sysconfdir}/init.d ${D}${sysconfdir}/lighttpd.d ${D}/www/pages/dav
 	install -m 0755 ${WORKDIR}/lighttpd ${D}${sysconfdir}/init.d
 	install -m 0644 ${WORKDIR}/lighttpd.conf ${D}${sysconfdir}
-	install -m 0644 ${WORKDIR}/index.html.lighttpd ${D}/www/pages/index.html	
+	install -m 0644 ${WORKDIR}/index.html.lighttpd ${D}/www/pages/index.html
 
 	install -d ${D}${systemd_unitdir}/system
 	install -m 0644 ${WORKDIR}/lighttpd.service ${D}${systemd_unitdir}/system
@@ -63,6 +69,21 @@ do_install_append() {
 	#For FHS compliance, create symbolic links to /var/log and /var/tmp for logs and temporary data
 	ln -sf ${localstatedir}/log ${D}/www/logs
 	ln -sf ${localstatedir}/tmp ${D}/www/var
+
+	dst_css="${D}/www/pages/css"
+	dst_img="${D}/www/pages/img"
+	dst_js="${D}/www/pages/js"
+
+	install -d $dst_css
+	install -d $dst_img
+	install -d $dst_js
+
+	install -m 777 ${WORKDIR}/css/bmc.css ${dst_css}
+	install -m 0644 ${WORKDIR}/img/clock_off_32.gif ${dst_img}
+	install -m 0644 ${WORKDIR}/img/clock_on_32.gif ${dst_img}
+	install -m 0644 ${WORKDIR}/img/logo64.gif ${dst_img}
+	install -m 0644 ${WORKDIR}/img/power_32.gif ${dst_img}
+	install -m 0644 ${WORKDIR}/js/bmc.js ${dst_js}	
 }
 
 FILES_${PN} += "${sysconfdir} /www"
