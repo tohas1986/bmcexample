@@ -33,7 +33,7 @@ _R-BD-E5R-V4 i2c devices scanner_
 
 Рецепт находится в `recipes-example/dscan`.
 
-В `recipes-example/dscan/files/dscan.conf` находится конфигурация.
+В `recipes-example/dscan/files/dscan.conf` - пример конфигурации.
 
 `recipes-example/dscan/dscan_0.1.bb` - рецепт для сборки самой утилиты.
 
