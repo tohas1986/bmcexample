@@ -67,5 +67,5 @@ fi
 for fan_tacho in $TACHOS; do
     fan=${fan_tacho%%:*}
     tacho=${fan_tacho##*:}
-    echo "Fan $fan RPMs:    $(cat $PWM_DIR/tacho${tacho}_rpm), $(cat $PWM_DIR/tacho$((tacho+4))_rpm)"
+    echo "$(cat $PWM_DIR/tacho${tacho}_rpm)"
 done

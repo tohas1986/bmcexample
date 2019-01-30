@@ -10,8 +10,18 @@ UBOOT_IMAGE_ENTRYPOINT = "0x40008000"
 
 # Include modules in rootfs
 IMAGE_INSTALL += " \
+  packagegroup-openbmc-base \
+  openbmc-utils \
+  sensor-setup \
   rikgpio \
   lighttpd \
+  rikcgi \
+  rikfans \
+  riknet \
+  i2c-tools \
+  fan-ctrl \
+  rikor-fru \
+  dscan \
   "
 
 IMAGE_FEATURES += " \
