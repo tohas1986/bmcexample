@@ -14,12 +14,30 @@
 # Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor,
 # Boston, MA 02110-1301 USA
+#
 
-binary: gpio_name.o 
-	$(CC) -o rikgpio gpio_name.o  
+SUMMARY = "Terminal Multiplexer"
+DESCRIPTION = "Util for multiplexing terminal"
+SECTION = "base"
+PR = "r1"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://README;md5=af8f63d78825fa6b6d8ddb2c20125719"
 
-gpio_name.o: gpio_name.c
-	$(CC) -c -I /home/tohas/fbook_openbmc/openBMC_rev2/openbmc/common/recipes-core/rikgpio/files gpio_name.c
+SRC_URI = "file://netconf_script.sh \
+           file://README \
+          "
 
-clean:
-	rm -f *.o binary
+S = "${WORKDIR}"
+
+pkgdir = "netconf"
+
+do_install() {
+  dst="${D}/usr/local/fbpackages/${pkgdir}"
+  install -d $dst
+  install -m 777 netconf_script.sh ${dst}/
+}
+
+FBPACKAGEDIR = "${prefix}/local/fbpackages"
+
+FILES_${PN} = "${FBPACKAGEDIR}"
+
