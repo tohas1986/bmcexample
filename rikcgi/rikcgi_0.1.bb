@@ -34,6 +34,10 @@ SRC_URI = "file://httpd_test.c \
 	   file://fanmode.sh \
 	   file://netconfig.sh \
 	   file://power.sh \
+	   file://fantach.sh \
+	   file://voltage.sh \
+	   file://sensors.sh \
+	   file://get_all.sh \
           "
 
 S = "${WORKDIR}"
@@ -55,6 +59,10 @@ do_install() {
   install -m 777 fanmode.sh ${dst}/
   install -m 777 netconfig.sh ${dst}/
   install -m 777 power.sh ${dst}/
+  install -m 777 fantach.sh ${dst}/
+  install -m 777 voltage.sh ${dst}/
+  install -m 777 sensors.sh ${dst}/
+  install -m 777 get_all.sh ${dst}/
   ln -snf ${dst}/httpd_test.cgi ${bin}/rikcgi
 }
 
